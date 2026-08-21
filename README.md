@@ -1,72 +1,226 @@
-# PayNova Technologies GRC & Technology Risk Management Project
+<div align="center">
 
-[![Company](https://img.shields.io/badge/Company-PayNova%20Technologies%20Pvt.%20Ltd.-blue.svg)](file:///01_Company_Profile/Company_Profile.md)
-[![Industry](https://img.shields.io/badge/Industry-FinTech%20%2F%20Digital%20Payments-green.svg)](file:///01_Company_Profile/Company_Profile.md)
-[![Frameworks](https://img.shields.io/badge/Compliance-ISO%2027001%20%7C%20NIST%20CSF%20%7C%20SOC%202-orange.svg)](file:///04_Compliance/)
-[![Status](https://img.shields.io/badge/Audit%20Readiness-PASSED%20QA%20%28100%25%29-brightgreen.svg)](file:///README.md#quality-control--validation-report)
+# 🔑 IAM Cross-Account Access & Identity Governance
 
----
+**Least Privilege · Trust Policies · Multi-Account Identity Architecture**
 
-## 1. Project Overview & Business Problem
-This portfolio repository contains a **complete, realistic, end-to-end GRC (Governance, Risk, and Compliance) operating model** designed for **PayNova Technologies Pvt. Ltd.**, a FinTech digital payments company with 850 employees processing 1.2 million daily UPI and card transactions across an AWS cloud native infrastructure.
+![Status](https://img.shields.io/badge/status-portfolio_case_study-blue)
+![Domain](https://img.shields.io/badge/domain-IAM%20Governance-informational)
+![Framework](https://img.shields.io/badge/frameworks-ISO%2027001%20A.9%20%7C%20NIST%20800--53%20AC--2%2FAC--6%20%7C%20CIS%20AWS%201.x-success)
 
-Prior to an upcoming external compliance assessment, PayNova management stated:
-> *"We have security controls, but nobody has a centralized view of our risks, controls, vendors, evidence, and remediation."*
+*A fictional GRC case study simulating cross-account identity governance for a cloud payment processor.*
 
-As a **Junior GRC Consultant / Technology Risk Analyst**, I built a centralized, auditable GRC operating model from scratch.
+</div>
 
 ---
 
-## 2. Project Architecture & Component Index
+## 📌 At a Glance
 
-```mermaid
-flowchart LR
-    RR["Risk Register (30 Risks)"] --> CL["Control Library (55 Controls)"]
-    CL --> CM["Compliance Mapping (ISO/NIST/SOC2)"]
-    CL --> CT["Control Testing (35 Tested)"]
-    CT --> RT["Remediation Tracker (22 Findings)"]
-    CL --> ER["Evidence Register (45 Items)"]
-    VR["Vendor Risk (15 Vendors)"] --> RT
-    IA["Internal Audit (16 Findings)"] --> RT
-    RT --> ED["Executive Dashboard & Heatmap"]
+| | |
+|---|---|
+| **GRC Domain** | Identity & Access Management Governance, Least Privilege, Trust Policies |
+| **Role Simulated** | IAM Security Specialist / GRC Governance Analyst |
+| **Frameworks Mapped** | ISO 27001 A.9 · NIST SP 800-53 AC-2/AC-6 · CIS AWS Benchmark 1.x |
+| **Scenario** | *Apex Cloud Financial Systems (ApexPay)* — Cross-Account Governance |
+| **Project Type** | Fictional Portfolio Case Study |
+
+### 📂 Key Deliverables
+
+| Deliverable | Description | Link |
+|---|---|---|
+| 🏗️ IAM Governance (Terraform) | Cross-account role infrastructure | [`terraform/main.tf`](./terraform/main.tf) |
+| 📋 IAM Policy Governance Standard | Trust policy & least-privilege standard | [`docs/iam_governance_policy.md`](./docs/iam_governance_policy.md) |
+| 🔎 Quarterly Access Review Evidence | Access recertification artifacts | [`evidence/QUARTERLY_ACCESS_REVIEW_EVIDENCE.md`](./evidence/QUARTERLY_ACCESS_REVIEW_EVIDENCE.md) |
+| 💬 Auditor Challenge Q&A | Defends design decisions under scrutiny | [`docs/auditor_qa_iam.md`](./docs/auditor_qa_iam.md) |
+
+---
+
+## 🎯 Overview
+
+IAM is not a beginner topic — which is exactly why it's such a strong portfolio signal. Real organizations are multi-account by default. This project implements **cross-account access the way it's actually done in production**: temporary credentials, scoped trust policies, and an audit trail for every assumption — never a shared long-lived key.
+
+---
+
+## 🏗️ Architecture Diagram
+
+<p align="center">
+  <img src="assets_iam/org_architecture.svg" alt="ApexPay AWS Organization Cross-Account Architecture" width="850">
+</p>
+
+| Account | Purpose |
+|---|---|
+| **Security / Admin** (`111111111111`) | Central hub — where security engineers authenticate and assume roles into other accounts |
+| **Workload** (`222222222222`) | Production/application environment, holds `SecurityAuditRole` |
+| **Logging** (`333333333333`) | Dedicated log archive (see Project 5), holds `LogArchiveRole` |
+| **Dev/Test** (`444444444444`) | Lower environment, holds `DevAccessRole` |
+
+---
+
+## 🔄 The Role Assumption Flow
+
+<p align="center">
+  <img src="assets_iam/role_assumption_flow.svg" alt="Cross-Account Role Assumption Sequence Diagram" width="850">
+</p>
+
+1. User/role authenticates in the Security Account **with MFA**
+2. Calls `sts:AssumeRole` with a Role ARN, ExternalId, and session name
+3. The Workload Account's trust policy evaluates the request — checking account, ExternalId, and MFA presence
+4. Temporary credentials are issued
+5. Credentials are used for up to **1 hour**, then expire automatically
+
+---
+
+## 🧩 Roles Implemented
+
+| Role | Purpose | Permissions | Trust |
+|---|---|---|---|
+| `SecurityAuditRole` | Read-only security review | `SecurityAudit`, `ViewOnly` | Security Account only |
+| `IncidentResponseRole` | Active incident handling | EC2, VPC, IAM read + limited write | Security Account + MFA |
+| `DeploymentRole` | CI/CD deployments | Scoped to specific services | CI/CD pipeline role only |
+
+---
+
+## 🛠️ Implementation Steps
+
+### Step 1 — The Trust Relationship
+
+Every trust policy explicitly names **who** can assume the role and **under what conditions** — no wildcards, no implicit trust.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::111111111111:root"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": {
+          "sts:ExternalId": "UniqueSecretValue"
+        },
+        "Bool": {
+          "aws:MultiFactorAuthPresent": "true"
+        }
+      }
+    }
+  ]
+}
 ```
 
-### Deliverable Modules Index:
-1. [01_Company_Profile/Company_Profile.md](file:///01_Company_Profile/Company_Profile.md) — Detailed FinTech architecture, asset inventory & regulatory scope.
-2. [02_Risk_Management/](file:///02_Risk_Management/) — Risk Register (30 risks), Detailed Risk Assessment (10 risks), Risk Treatment Plan.
-3. [03_Control_Management/](file:///03_Control_Management/) — Control Library (55 controls), Control Testing (35 tested), Control Effectiveness Summary.
-4. [04_Compliance/](file:///04_Compliance/) — ISO 27001:2022, NIST CSF v2.0, SOC 2 TSC Mappings & Compliance Gap Assessment.
-5. [05_Remediation/Remediation_Tracker.xlsx](file:///05_Remediation/Remediation_Tracker.xlsx) — 22 findings with SLA tracking, aging days & overdue flags.
-6. [06_Vendor_Risk/](file:///06_Vendor_Risk/) — Vendor Register (15 vendors), Vendor Assessment & 25-Question Security Questionnaire.
-7. [07_Audit/](file:///07_Audit/) — Internal Audit Plan, 16 Audit Findings (5 Cs format) & Working Papers.
-8. [08_Evidence/Evidence_Register.xlsx](file:///08_Evidence/Evidence_Register.xlsx) — 45 indexed evidence items linked to controls & risks.
-9. [09_Policies/Policy_Register.xlsx](file:///09_Policies/Policy_Register.xlsx) — 22 corporate security policies with annual review tracking.
-10. [10_Dashboard/](file:///10_Dashboard/) — Executive Dashboard, 5x5 Risk Heatmap grid & 22 KPI/KRI metrics.
-11. [11_Documentation/](file:///11_Documentation/) — Operating Model, Risk/Testing/Vendor/Audit Methodologies, Executive Report, 30/60/90 Day Roadmap, GRC Maturity Assessment, 10 Realistic Scenarios, ServiceNow Mapping, 20 Automations.
-12. [12_Interview_Preparation/](file:///12_Interview_Preparation/) — Project Pitches (30s/1m/3m/5m), 75+ Q&As with model answers, 10 STAR Stories.
+> `ExternalId` closes the [confused-deputy problem](https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html); the MFA condition means a leaked credential alone still isn't enough to assume the role.
+
+### Step 2 — The Permission Policy (Least Privilege)
+
+| ❌ Overprivileged | ✅ Least Privilege |
+|---|---|
+| `"Action": "ec2:*"`, `"Resource": "*"` | `"Action": ["ec2:DescribeInstances", "ec2:DescribeVpcs", "ec2:DescribeSubnets"]`, `"Resource": "*"` |
+
+Scope to exactly the API calls the role needs to do its job — nothing broader "just in case."
+
+### Step 3 — The Assuming Role's Permission
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": [
+        "arn:aws:iam::222222222222:role/SecurityAuditRole",
+        "arn:aws:iam::333333333333:role/LogArchiveRole"
+      ]
+    }
+  ]
+}
+```
+
+> Roles are **explicitly enumerated** in `Resource` — never a wildcard. If a new role needs to be assumable, it gets added deliberately, not inherited by accident.
 
 ---
 
-## 3. Key Findings & Dashboard Summary Metrics
-- **Total Enterprise Risks:** 30 cataloged | Inherent: 10 Critical, 15 High | **Residual: 0 Critical**, 4 High (13%), 16 Medium (53%), 10 Low (33%).
-- **Control Effectiveness Rate:** 35 tested | **80.0% Effective**, 14.3% Partially Effective, 5.7% Ineffective.
-- **Compliance Scores:** ISO 27001:2022 = **69.1%** | NIST CSF v2.0 = **72.7%** | SOC 2 Type II = **65.5%**.
-- **Remediation Status:** 22 findings tracked | 10 Closed (45.5%), 12 Open/In-Progress, 3 Overdue SLA Breaches.
+## ⚖️ Why Role Assumption Over Long-Lived Credentials?
+
+| | Long-Lived Keys | Role Assumption |
+|---|---|---|
+| Expiration | ❌ Never expire | ✅ Temporary (1–12 hours) |
+| Rotation | ❌ Manual | ✅ Automatic |
+| Auditability | ❌ Hard to trace | ✅ Every assumption logged in CloudTrail |
+| MFA | ❌ Not supported | ✅ Can be required as a condition |
+| Secrets management | ❌ Shared secrets to protect | ✅ Nothing to leak — credentials are ephemeral |
 
 ---
 
-## 4. Quality Control & Validation Report
+## 📈 How Would This Scale?
 
-| Validation Area | Status | Issues Found | Resolution |
-| :--- | :---: | :---: | :--- |
-| **Risk Register (30 Risks)** | **PASS** | 0 | All 30 risks calculated using `=L*I` formula; ratings match matrix 100%. |
-| **Control Library (55 Controls)** | **PASS** | 0 | Every major risk mapped to at least one preventive/detective control. |
-| **Control Testing (35 Tested)** | **PASS** | 0 | 35 controls tested; Effective, Partially Effective, and Ineffective results documented. |
-| **Compliance Mapping** | **PASS** | 0 | Accurate mappings across ISO 27001:2022, NIST CSF v2.0, and SOC 2 TSC. |
-| **Remediation Tracker (22 Items)** | **PASS** | 0 | All findings include owner, due date, status, aging days formula, and overdue flags. |
-| **Vendor Risk (15 Vendors)** | **PASS** | 0 | All 15 vendors assessed with risk scoring and 25-question security questionnaire. |
-| **Internal Audit (16 Findings)** | **PASS** | 0 | Formatted using professional 5 Cs audit structure; cross-referenced to controls. |
-| **Evidence Register (45 Items)** | **PASS** | 0 | Every tested control linked to valid evidence record with S3 vault storage location. |
-| **Policy Register (22 Policies)** | **PASS** | 0 | 100% policies assigned owners, versions, and annual review timestamps. |
-| **Executive Dashboard & Heatmap** | **PASS** | 0 | Dashboard metrics and 5x5 heatmap grid derived from underlying datasets. |
-| **Data Relationships & IDs** | **PASS** | 0 | 100% ID consistency verified across `RISK-xxx`, `CTRL-xxx`, `FIND-xxx`, `VEND-xxx`, `AUD-xxx`, `EVID-xxx`, `POL-xxx`. |
+<p align="center">
+  <img src="assets_iam/scaling_ous.svg" alt="Scaling Cross-Account Access with AWS Organizations OUs" width="850">
+</p>
+
+At scale — 20, 100+ accounts — individual role-by-role setup breaks down. The pattern becomes:
+
+- **AWS Organizations** to group accounts into OUs (Prod, Dev, Sandbox)
+- **Service Control Policies (SCPs)** to set guardrails no account can override
+- **CloudFormation StackSets / Terraform modules** to deploy consistent roles across every account automatically
+
+---
+
+## 🧨 Blast Radius: Why Scoping Matters
+
+<p align="center">
+  <img src="assets_iam/blast_radius_comparison.svg" alt="Blast Radius Comparison — Over-Privileged vs Properly Scoped Role" width="900">
+</p>
+
+The entire argument for least privilege in one picture: an over-privileged role, once compromised, gives an attacker the keys to the whole account — deletion, exfiltration, backdoors, cross-account pivoting, and log tampering. A properly scoped role gives them almost nothing.
+
+---
+
+## 🔍 Detection: What to Monitor
+
+CloudTrail events worth alerting on:
+
+- `AssumeRole` from unexpected source IPs
+- `AssumeRole` failures (possible brute-force attempts)
+- Role assumption outside business hours
+- Cross-account access from unapproved accounts
+- Changes to trust policies
+
+---
+
+## ✅ Deliverables Checklist
+
+- [x] Terraform code for cross-account role setup
+- [x] Trust policies with proper conditions
+- [x] Permission policies following least privilege
+- [x] Documentation explaining design decisions
+- [x] Diagram showing account relationships
+- [x] Write-up on scaling considerations
+- [x] Monitoring/alerting recommendations
+
+---
+
+## ❓ Questions Answered in This Documentation
+
+1. Why role assumption instead of long-lived credentials?
+2. How would this scale to 20 or 100 accounts?
+3. What risks exist if a role is over-privileged?
+4. How would misuse be detected?
+5. What happens if the Security Account itself is compromised?
+
+---
+
+## 📚 Further Reading
+
+- [AWS Cross-Account Access](https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html)
+- [The Confused Deputy Problem](https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html)
+- [AWS Organizations Best Practices](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_best-practices.html)
+
+---
+
+<div align="center">
+
+**This project signals maturity.** It shows an understanding of how modern cloud environments are actually structured — and why IAM mistakes are so dangerous.
+
+</div>
