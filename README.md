@@ -30,7 +30,7 @@ As **Junior GRC Consultant / Technology Risk Analyst**, I built a centralized, a
 ## 2. Project Architecture & Component Index
 
 <p align="center">
-  <img src="assets_grc/grc_architecture.svg" alt="PayNova GRC Operating Model Component Architecture" width="850">
+  <img src="grc01 latest/grc_architecture.svg" alt="PayNova GRC Operating Model Component Architecture" width="850">
 </p>
 
 ### 📂 Deliverable Modules
@@ -57,7 +57,7 @@ As **Junior GRC Consultant / Technology Risk Analyst**, I built a centralized, a
 ### Risk Posture — Inherent vs. Residual
 
 <p align="center">
-  <img src="assets_grc/risk_inherent_vs_residual.svg" alt="Inherent vs Residual Risk Chart" width="750">
+  <img src="grc01 latest/risk_inherent_vs_residual.svg" alt="Inherent vs Residual Risk Chart" width="750">
 </p>
 
 **30 enterprise risks cataloged.** Inherent risk started at 10 Critical / 15 High. After control implementation, residual risk shows **0 Critical**, 4 High (13%), 16 Medium (53%), 10 Low (33%) — the entire critical band was closed out through treatment.
@@ -65,7 +65,7 @@ As **Junior GRC Consultant / Technology Risk Analyst**, I built a centralized, a
 ### Control Effectiveness
 
 <p align="center">
-  <img src="assets_grc/control_effectiveness.svg" alt="Control Effectiveness Donut Chart" width="500">
+  <img src="grc01 latest/control_effectiveness.svg" alt="Control Effectiveness Donut Chart" width="500">
 </p>
 
 **35 of 55 controls tested** to date: 80.0% Effective, 14.3% Partially Effective, 5.7% Ineffective — the ineffective and partial results feed directly into the Remediation Tracker.
@@ -73,7 +73,7 @@ As **Junior GRC Consultant / Technology Risk Analyst**, I built a centralized, a
 ### Compliance Scores by Framework
 
 <p align="center">
-  <img src="assets_grc/compliance_scores.svg" alt="Compliance Scores by Framework Chart" width="750">
+  <img src="grc01 latest/compliance_scores.svg" alt="Compliance Scores by Framework Chart" width="750">
 </p>
 
 | Framework | Score |
@@ -87,7 +87,7 @@ All three sit below the 80% audit-readiness target — the gap analysis in `04_C
 ### Remediation Status
 
 <p align="center">
-  <img src="assets_grc/remediation_status.svg" alt="Remediation Status Donut Chart" width="500">
+  <img src="grc01 latest/remediation_status.svg" alt="Remediation Status Donut Chart" width="500">
 </p>
 
 **22 findings tracked:** 10 Closed (45.5%), 9 Open/In-Progress (40.9%), **3 Overdue SLA breaches (13.6%)** flagged for immediate escalation.
@@ -95,7 +95,7 @@ All three sit below the 80% audit-readiness target — the gap analysis in `04_C
 ### 5×5 Risk Heatmap
 
 <p align="center">
-  <img src="assets_grc/risk_heatmap.svg" alt="5x5 Risk Heatmap Grid" width="700">
+  <img src="grc01 latest/risk_heatmap.svg" alt="5x5 Risk Heatmap Grid" width="700">
 </p>
 
 Standard Likelihood × Impact scoring grid used across the Risk Register — every one of the 30 cataloged risks is plotted against this matrix in `10_Dashboard/`.
